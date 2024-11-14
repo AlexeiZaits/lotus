@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+//text
+
+$text-primary: black;
+$text-secondary: #323A47;
+$text-treinary-light_theme: #818387;
+$text-link: #34db66;
+$text-error: #D5393C;
+
+//background
+
+$main-back: var(--colors-bg);
+$inverse-main-back: var(--inverse-colors-bg);
+$bg-block-first: #FFFFFF;
+$bg-block-secodary: #EDEDED;
+$button-back: #F3FFF9;
+$bg-transparant: var(--transparent-bg);
+
+
+//border
+$border-main: #2fbd59;
+
+// fonts
+$main-font: "Montserrat", sans-serif;
+$secondary-font: "Montserrat", sans-serif;
+
+// radius
+$main-radius: 0.75rem;
+
+// size
+$mobile: "375px";
+$tablet: "1024px";
+$dekstop: "1440px";
