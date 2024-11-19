@@ -4,6 +4,7 @@ import {
 } from "react-router-dom";
 import App from "../ui/App";
 import { MainPage } from "pages/MainPage";
+import { AuctionTable } from "widjets/index";
 
 export const router = createBrowserRouter([
   { 
@@ -12,8 +13,11 @@ export const router = createBrowserRouter([
       { 
         path: "/",
         element: <MainPage/>
-        ,
-      }      
+      },
+      {
+        path: "/auction/:auctionName/:id",
+        element: <AuctionTable/>,
+      },
     ]
   },
 ]);
