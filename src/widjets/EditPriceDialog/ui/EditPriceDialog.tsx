@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -21,16 +21,11 @@ interface EditPriceDialogProps {
 export const EditPriceDialog = ({ name, open, onClose, onSave, currentBid, parametr }: EditPriceDialogProps) => {
   const [bid, setBid] = useState<string|boolean|number>(currentBid);
   
-  // useEffect(() => {
-  //   return () => setBid(null)
-  // }, [])
-  
   const handleSave = () => {
     onSave(parametr, bid);
     onClose();
   };
   
-  console.log(typeof(bid))
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>

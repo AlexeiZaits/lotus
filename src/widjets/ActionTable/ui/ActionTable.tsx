@@ -9,10 +9,8 @@ import {
   TableRow,
   Paper,
   Button,
-  TextField,
   Avatar
 } from '@mui/material';
-import { nanoid } from '@reduxjs/toolkit';
 // import { nanoid } from '@reduxjs/toolkit';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -21,29 +19,23 @@ import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { formatDateTime } from './lib/formatDateTime';
 import EditIcon from "@mui/icons-material/Edit";
 
-const API_URL = 'ws://localhost:3000';
-
-
-const generatePlayersId = (count: number) => {
-    let ids = [];
-    for (let i=0; i<count; i++){
-        const id = nanoid();
-        ids.push(id)
-    }
-
-    return ids
-}
+export const protocolHttp = "http://";
+export const protocolWs = "http://";
+export const API_URL = '83.166.232.242:9999';
 
 interface IPaticipiant {
     [key: string]: string|number|boolean
 }
 
-interface IAuction {
+export interface IAuction {
     participants: IPaticipiant[],
     currentBid: number,
     currentBidder: IPaticipiant,
     isActive: boolean,
     parameters: string[],
+    name: string,
+    _id: string,
+    createdAt: Date,
     status: "idle"| "create"| "active" | "ended" 
 };
 
@@ -69,19 +61,19 @@ export const AuctionTable = () => {
     };
     
     const handleCloseDialog = () => setDialog(null);
-    
     useEffect(() => {
-        ws.current = new WebSocket(`ws://localhost:3000?id=${id}?auctionName=${auctionName}`);
+        ws.current = new WebSocket(`${protocolWs+API_URL}?id=${id}?auctionName=${auctionName}`);
         ws.current.onopen = () => {
             console.log('web socket connected')
-            // const initialDataRequest = { type: 'GET_AUCTION_BY_ID', id: id};
-            // ws.current?.send(JSON.stringify(initialDataRequest));
+            const initialDataRequest = { type: 'GET_AUCTION_BY_ID'};
+            ws.current?.send(JSON.stringify(initialDataRequest));
         };
-
+        
         ws.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
             switch (data.type) {
             case 'GET_AUCTION_DATA':
+                console.log()
                 setAuction(data.auction);
                 break
             case 'AUCTION_DETAILS':
@@ -90,17 +82,23 @@ export const AuctionTable = () => {
                 break;
             case 'AUCTION_CREATED':
                 setAuction(data.auction);
-                // setTime(Math.floor(data.timeRemaining / 1000))
                 break;
             case 'AUCTION_STARTED':
                 setAuction(data.auction);
                 break;
             case 'BID_PLACED':
-                // setMessages((prev) => [...prev, `${data.participant} placed a bid: $${data.bid}`]);
                 setAuction(data.auction);
                 break;
             case 'TURN_CHANGED':
-                setAuction((prev: IAuction) => ({ ...prev, currentBidder: data.currentBidder }));
+                setAuction((prev: IAuction | null) => {
+                    if (!prev) {
+                        return null;
+                    }
+                    return {
+                        ...prev,
+                        currentBidder: data.currentBidder,
+                    };
+                });;
                 break;
             case 'TIME_UPDATE':
                 setTime(Math.floor(data.timeRemaining / 1000));
@@ -109,8 +107,15 @@ export const AuctionTable = () => {
                 data.timeTurn !== undefined && setTimeTurn(data.timeTurn);
                 break;
             case 'AUCTION_ENDED':
-                // setMessages((prev) => [...prev, `Auction ended! Winner: ${data.winner} with $${data.finalBid}`]);
-                setAuction((prev) => ({...prev, isActive: false}));
+                setAuction((prev: IAuction | null) => {
+                    if (!prev) {
+                        return null;
+                    }
+                    return {
+                        ...prev,
+                        isActive: false,
+                    };
+                });
                 break;
             default:
             }
@@ -126,7 +131,7 @@ export const AuctionTable = () => {
                 ws.current.close();
             }
         };
-    }, []);
+    }, [id]);
 
     useEffect(()=> {
         const indexParticipant = auction?.participants.findIndex((item) => item._id === id)
@@ -166,7 +171,7 @@ export const AuctionTable = () => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;   
     
-    console.log(auction?.status)
+    console.log(auction)
     return (
     <>
     {dialog?.view && <EditPriceDialog
@@ -180,10 +185,11 @@ export const AuctionTable = () => {
     <Box sx={{backgroundColor: "white", padding: 2}}>
         <Box sx={{display: "flex", justifyContent: "space-between"}}>
             <Typography variant="h6" gutterBottom color="error">
-                Ход торгов Тестовые торги на аппарат ЛОТОС №2033564 ({formatDateTime(dateTimeRef.current)})
+                
+                {auction?.name} ({formatDateTime(dateTimeRef.current)})
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "15rem" }}>
-                {<Button
+                {auction?.isActive ? <Button
                 variant="outlined"
                 color="error"
                 sx={{
@@ -209,13 +215,15 @@ export const AuctionTable = () => {
                         right: '16px', // Отступ от правого края
                         }}
                     />
-                </Button>}
+                </Button>: 
+                <Typography variant="h6" gutterBottom color="error">Аукцион закончен</Typography>
+                }
             </Box>
         </Box>
         <Typography variant="body2" color="error">
             Уважаемые участники, во время вашего хода вы можете изменить параметры торгов, указанных в таблице:
         </Typography>
-        {id === "Admin" && auction?.participants.map((item) => {
+        {id === "Admin" && auction && auction?.participants.map((item) => {
             return <Link  key={String(item._id)} to={`/auction/${auctionName}/${item._id}`}>
                 <Typography key={String(item._id)} variant="body2" color="error">
                 {`${item._id}`}
@@ -223,7 +231,7 @@ export const AuctionTable = () => {
             </Link>
         })}
         
-        <>
+        {auction && <>
         <TableContainer component={Paper} sx={{ marginTop: 2 }}>
         <Table>
             <TableHead>
@@ -331,10 +339,10 @@ export const AuctionTable = () => {
         <Box sx={{backgroundColor: "white", padding: 2, display: "flex", justifyContent: "space-between"}}>
             <Typography sx={{color: "black"}}>Действия: {auction?.currentBidder.id === id && "можете изменить параметры в своём столбце или передать ход"}</Typography>
             {auction?.currentBidder.id === id && auction?.status === "active" && <Button onClick={handleNextTurn}>Передать ход</Button>}
-            {id === "Admin" && auction?.status === "active" && <Button onClick={handleEndAuction}>Закончить аукцион</Button>}
-            {id === "Admin" && auction?.status !== "active" &&  <Button onClick={handleStartAuction}>Начать аукцион</Button>}
+            {id === "Admin" && auction?.status === "active" && auction.isActive && <Button onClick={handleEndAuction}>Закончить аукцион</Button>}
+            {id === "Admin" && auction?.status !== "active" && auction.isActive && <Button onClick={handleStartAuction}>Начать аукцион</Button>}
         </Box>
-        </>
+        </>}
     </Box>
     </>
     );
