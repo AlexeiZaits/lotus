@@ -11,17 +11,16 @@ import {
   Button,
   Avatar
 } from '@mui/material';
-// import { nanoid } from '@reduxjs/toolkit';
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { EditPriceDialog } from 'widjets/EditPriceDialog';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { formatDateTime } from './lib/formatDateTime';
 import EditIcon from "@mui/icons-material/Edit";
 
-export const protocolHttp = "https://";
-export const protocolWs = "wss://";
-export const API_URL = '83.166.232.242:9999';
+export const protocolHttp = "http://";
+export const protocolWs = "ws://";
+export const API_URL = 'localhost:9998';
 
 interface IPaticipiant {
     [key: string]: string|number|boolean
@@ -55,6 +54,7 @@ export const AuctionTable = () => {
     const [timeTurn, setTimeTurn] = useState(30);
     const ws = useRef<WebSocket | null>(null);
     const dateTimeRef = useRef(new Date());
+    const location = useLocation();
 
     const handleOpenDialog = (dialog: IDialog) => {
         setDialog(dialog)
@@ -223,10 +223,14 @@ export const AuctionTable = () => {
         <Typography variant="body2" color="error">
             Уважаемые участники, во время вашего хода вы можете изменить параметры торгов, указанных в таблице:
         </Typography>
+        <br></br>
+        {id === "Admin" && <Typography variant="body2" color="error">
+            Список ссылок для участников:
+        </Typography>}
         {id === "Admin" && auction && auction?.participants.map((item) => {
             return <Link  key={String(item._id)} to={`/auction/${auctionName}/${item._id}`}>
                 <Typography key={String(item._id)} variant="body2" color="error">
-                {`${item._id}`}
+                {`${"http:/"+location.pathname.split("/Admin")[0]+"/"+item._id}`}
                 </Typography>
             </Link>
         })}

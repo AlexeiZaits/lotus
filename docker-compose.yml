@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "5174:5174"  # Прокси для фронтенда
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: lotus-backend/Dockerfile
+    ports:
+      - "9998:9998"  # Прокси для бэкенда
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
