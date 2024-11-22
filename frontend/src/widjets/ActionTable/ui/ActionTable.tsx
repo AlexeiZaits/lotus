@@ -62,7 +62,7 @@ export const AuctionTable = () => {
     
     const handleCloseDialog = () => setDialog(null);
     useEffect(() => {
-        ws.current = new WebSocket(`${protocolWs+apiUrl}?id=${id}?auctionName=${auctionName}`);
+        ws.current = new WebSocket(`${protocolWs+apiUrl+"9998"}?id=${id}?auctionName=${auctionName}`);
         ws.current.onopen = () => {
             console.log('web socket connected')
             const initialDataRequest = { type: 'GET_AUCTION_BY_ID'};

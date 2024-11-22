@@ -4,6 +4,8 @@ import axios from "axios";
 import { AuctionCard } from "entities/index";
 import { IAuction, protocolHttp } from "widjets/index";
 const apiUrl = import.meta.env.VITE_API_URL;
+const apiPort = "9998";
+
 
 export const MainPage = () => {
     const [nameAuction, setNameAuction] = useState("")
@@ -12,7 +14,7 @@ export const MainPage = () => {
     useEffect(() => {
         const fetchAuctions = async () => {
           try {
-            const response = await axios.get(protocolHttp+apiUrl+"/auctions");
+            const response = await axios.get(protocolHttp+apiUrl+apiPort+"/auctions");
             const auctionNames = response.data
             setAuctions(auctionNames);
           } catch (error) {
@@ -28,7 +30,7 @@ export const MainPage = () => {
 
         try {
             const bodyRequest = { name: nameAuction}
-            const response = await axios.post(protocolHttp+API_URL+"/auctions", bodyRequest);
+            const response = await axios.post(protocolHttp+apiUrl+apiPort+"/auctions", bodyRequest);
             setAuctions((prev) => [...prev, response.data.auction]);
             setNameAuction("");
         } catch (error) {
