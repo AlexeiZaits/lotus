@@ -12,7 +12,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: lotus-backend/Dockerfile
+      dockerfile: backend/Dockerfile
     ports:
       - "9998:9998"  # Прокси для бэкенда
     networks:
