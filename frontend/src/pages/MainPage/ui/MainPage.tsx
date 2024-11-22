@@ -2,7 +2,8 @@ import { Box, Button, TextField } from "@mui/material"
 import { useEffect, useState } from "react"
 import axios from "axios";
 import { AuctionCard } from "entities/index";
-import { API_URL, IAuction, protocolHttp } from "widjets/index";
+import { IAuction, protocolHttp } from "widjets/index";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const MainPage = () => {
     const [nameAuction, setNameAuction] = useState("")
@@ -11,7 +12,7 @@ export const MainPage = () => {
     useEffect(() => {
         const fetchAuctions = async () => {
           try {
-            const response = await axios.get(protocolHttp+API_URL+"/auctions");
+            const response = await axios.get(protocolHttp+apiUrl+"/auctions");
             const auctionNames = response.data
             setAuctions(auctionNames);
           } catch (error) {

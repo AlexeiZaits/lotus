@@ -17,10 +17,10 @@ import { EditPriceDialog } from 'widjets/EditPriceDialog';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { formatDateTime } from './lib/formatDateTime';
 import EditIcon from "@mui/icons-material/Edit";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const protocolHttp = "http://";
 export const protocolWs = "ws://";
-export const API_URL = 'localhost:9998';
 
 interface IPaticipiant {
     [key: string]: string|number|boolean
@@ -62,7 +62,7 @@ export const AuctionTable = () => {
     
     const handleCloseDialog = () => setDialog(null);
     useEffect(() => {
-        ws.current = new WebSocket(`${protocolWs+API_URL}?id=${id}?auctionName=${auctionName}`);
+        ws.current = new WebSocket(`${protocolWs+apiUrl}?id=${id}?auctionName=${auctionName}`);
         ws.current.onopen = () => {
             console.log('web socket connected')
             const initialDataRequest = { type: 'GET_AUCTION_BY_ID'};
