@@ -19,8 +19,8 @@ import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import { formatDateTime } from './lib/formatDateTime';
 import EditIcon from "@mui/icons-material/Edit";
 
-export const protocolHttp = "http://";
-export const protocolWs = "http://";
+export const protocolHttp = "https://";
+export const protocolWs = "wss://";
 export const API_URL = '83.166.232.242:9999';
 
 interface IPaticipiant {
